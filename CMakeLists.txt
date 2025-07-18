@@ -8,6 +8,9 @@ project(qvtfpp
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# options
+option(QVTFPP_INSTALL_PLUGIN "Create install rules for ${PROJECT_NAME}" ON)
+
 # add helpers
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
 include(CS_All)
@@ -37,4 +40,6 @@ target_link_libraries(${PROJECT_NAME} Qt6::Gui sourcepp::vtfpp)
 target_compile_options(${PROJECT_NAME} PUBLIC "-fexceptions")
 
 # install rules
-cs_include_directory(install)
+if(QVTFPP_INSTALL_PLUGIN)
+	cs_include_directory(install)
+endif()
