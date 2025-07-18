@@ -1,4 +1,13 @@
-.*
-*~
-build
-CMakeLists.txt.user
+# IDEs
+.idea/
+.vs/
+.vscode/
+CMakeSettings.json
+
+# Project exclude paths
+build/
+cmake-build-*/
+out/
+
+# Generated
+**/generated/

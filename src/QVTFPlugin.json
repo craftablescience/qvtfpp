@@ -1,0 +1,7 @@
+{
+	"Keys": ["vtf"],
+	"MimeTypes": [
+		"image/x-vtf",
+		"image/vnd.valve.source.texture"
+	]
+}

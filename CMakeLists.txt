@@ -1,44 +1,40 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
-project(qvtf)
+# set up project
+project(qvtfpp
+		DESCRIPTION "A Qt6 QImageIO plugin to load VTF textures."
+		VERSION "0.1.0"
+		HOMEPAGE_URL "https://github.com/craftablescience/qvtfpp")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ---- dependencies -----------------------------------------------------------
+# add helpers
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
+include(CS_All)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# extra metadata variables
+set(PROJECT_NAME_PRETTY "qvtf++")
+cs_version_pretty() # PROJECT_VERSION_PRETTY
+set(PROJECT_ORGANIZATION_NAME "craftablescience" CACHE INTERNAL "" FORCE)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui)
+# initial VS integration
+cs_setup_vs_defaults()
 
-find_package(ECM 6.11.0  NO_MODULE)
-if (${ECM_FOUND})
-	set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
-	include(KDECompilerSettings)
-endif()
+# set common compile options
+option(QVTFPP_USE_LTO "Compile ${PROJECT_NAME_PRETTY} with LTO/IPO" OFF)
+cs_configure_defaults(QVTFPP_USE_LTO)
 
-find_package(PkgConfig REQUIRED)
-find_program(XDG_MIME_EXECUTABLE xdg-mime) # optional, for MIME type installation
+# shared code
+cs_include_directory(ext)
 
-pkg_check_modules(VTFLIB REQUIRED VTFLib)
+# qvtfpp
+qt_add_plugin(${PROJECT_NAME} PLUGIN_TYPE imageformats)
+target_sources(${PROJECT_NAME} PRIVATE
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/QVTFPlugin.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/QVTFPlugin.h")
+set_target_properties(qvtfpp PROPERTIES AUTOMOC ON)
+target_link_libraries(${PROJECT_NAME} Qt6::Gui sourcepp::vtfpp)
+target_compile_options(${PROJECT_NAME} PUBLIC "-fexceptions")
 
-# ---- compiler flags ---------------------------------------------------------
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -pedantic -Werror -Wno-write-strings -Wno-suggest-override -O3")
-endif()
-
-include_directories(${VTFLIB_INCLUDE_DIRS})
-
-if(NOT(${CMAKE_SYSTEM_NAME} STREQUAL "Windows"))
-	add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE)
-endif()
-
-# ---- build library ----------------------------------------------------------
-qt_add_plugin(qvtf PLUGIN_TYPE imageformats)
-target_sources(qvtf PRIVATE ValveTextureFile.cpp)
-target_link_libraries(qvtf Qt6::Gui ${VTFLIB_LIBRARIES})
-
-# ---- install target ---------------------------------------------------------
-install(TARGETS qvtf DESTINATION ${QT6_INSTALL_PLUGINS}/imageformats)
-
-if(NOT(${XDG_MIME_EXECUTABLE} STREQUAL "XDG_MIME_EXECUTABLE-NOTFOUND"))
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor \"${PROJECT_SOURCE_DIR}/vtf.xml\")")
-endif()
+# install rules
+cs_include_directory(install)
