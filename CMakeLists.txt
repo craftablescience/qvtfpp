@@ -10,6 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # options
 option(QVTFPP_INSTALL_PLUGIN "Create install rules for ${PROJECT_NAME}" ON)
+if(APPLE OR NOT UNIX)
+	# Linux-specific sorry
+	set(QVTFPP_INSTALL_PLUGIN OFF CACHE INTERNAL "" FORCE)
+endif()
 
 # add helpers
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/helpers")
