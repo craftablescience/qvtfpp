@@ -65,7 +65,7 @@ QRect QVTFHandler::currentImageRect() const {
 	if (this->state != State::Read) {
 		return {};
 	}
-	return {0, 0, this->vtf.getWidth(), this->vtf.getHeight()};
+	return {0, 0, this->vtf.getWidthWithoutPadding(), this->vtf.getHeightWithoutPadding()};
 }
 
 int QVTFHandler::imageCount() const {
@@ -111,7 +111,7 @@ QVariant QVTFHandler::option(ImageOption option) const {
 			return true;
 		case Size:
 			if (this->state == State::Read) {
-				return QSize{this->vtf.getWidth(), this->vtf.getHeight()};
+				return QSize{this->vtf.getWidthWithoutPadding(), this->vtf.getHeightWithoutPadding()};
 			}
 			break;
 		case ImageFormat:
@@ -154,8 +154,8 @@ bool QVTFHandler::read(QImage* image) {
 		return false;
 	}
 
-	const auto width  = this->vtf.getWidth();
-	const auto height = this->vtf.getHeight();
+	const auto width  = this->vtf.getWidthWithoutPadding();
+	const auto height = this->vtf.getHeightWithoutPadding();
 	QImage::Format format;
 	std::vector<std::byte> imageData;
 	if (vtfpp::ImageFormatDetails::decompressedAlpha(this->vtf.getFormat())) {
