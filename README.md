@@ -29,4 +29,4 @@ sudo dnf install ./qvtf++-<VERSION>-Linux.rpm
 ## Backend
 
 This plugin is powered by a collection of open-source C++20 Source engine parsers called
-[sourcepp](https://github.com/craftablescience/sourcepp).
+[sourcepp](https://sourcepp.org).
